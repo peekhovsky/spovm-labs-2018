@@ -1,0 +1,5 @@
+﻿  stdafx.cpp
+  LAB2.Child2.cpp
+c:\users\rosti\documents\github\systemprog-labs-2018\lab2.events\lab2.child2\lab2.child2\lab2.child2.cpp(33): warning C4326: return type of 'main' should be 'int' instead of 'DWORD'
+c:\users\rosti\documents\github\systemprog-labs-2018\lab2.events\lab2.child2\lab2.child2\lab2.child2.cpp(34): warning C4101: 'lt': unreferenced local variable
+  LAB2.Child2.vcxproj -> C:\Users\rosti\Documents\GitHub\systemprog-labs-2018\LAB2.Events\LAB2.Child2\Debug\LAB2.Child2.exe
