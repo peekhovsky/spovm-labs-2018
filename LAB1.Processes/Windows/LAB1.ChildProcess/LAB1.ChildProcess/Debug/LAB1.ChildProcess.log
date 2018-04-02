@@ -1,0 +1,4 @@
+﻿  LAB1ChildProcess.cpp
+f:\documents\system programming\lab1.childprocess\lab1.childprocess\lab1childprocess.cpp(34): warning C4101: 'lt': unreferenced local variable
+  LAB1.ChildProcess.vcxproj -> F:\Documents\System Programming\LAB1.ChildProcess\Debug\LAB1.ChildProcess.exe
+  LAB1.ChildProcess.vcxproj -> F:\Documents\System Programming\LAB1.ChildProcess\Debug\LAB1.ChildProcess.pdb (Partial PDB)
