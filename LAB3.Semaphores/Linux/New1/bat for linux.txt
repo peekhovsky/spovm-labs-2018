@@ -1,0 +1,7 @@
+cd /mnt/c/Users/rosti/Documents/GitHub/systemprog-labs-2018/LAB3.Semaphores/New2
+g++ -o handler handler.cpp -lncurses -lpthread
+g++ -o parent parent.cpp -lncurses -lpthread
+g++ -o child child.cpp -lncurses -lpthread
+
+
+mnt/c/Users/rosti/Documents/GitHub/systemprog-labs-2018/LAB3.Semaphores/New

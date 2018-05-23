@@ -1,0 +1,5 @@
+﻿  LAB3.Handler.cpp
+c:\users\rosti\documents\github\systemprog-labs-2018\lab3.semaphores\windows\lab3.handler\lab3.handler\lab3.handler.cpp(54): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+c:\users\rosti\documents\github\systemprog-labs-2018\lab3.semaphores\windows\lab3.handler\lab3.handler\lab3.handler.cpp(123): warning C4018: '<': signed/unsigned mismatch
+c:\users\rosti\documents\github\systemprog-labs-2018\lab3.semaphores\windows\lab3.handler\lab3.handler\lab3.handler.cpp(136): warning C4018: '<': signed/unsigned mismatch
+  LAB3.Handler.vcxproj -> C:\Users\rosti\Documents\GitHub\systemprog-labs-2018\LAB3.Semaphores\Windows\LAB3.Handler\Debug\LAB3.Handler.exe

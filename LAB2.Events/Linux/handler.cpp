@@ -10,6 +10,11 @@
 #define STRING_SIZE 20
 using namespace std;
 
+#define PRINT_SEM_NAME "PRINT_SEM"
+#define END_SEM_NAME "END_SEM"
+struct sigaction print_signal;
+struct sigaction end_signal;
+
 struct sigaction print_signal;
 struct sigaction end_signal;
 

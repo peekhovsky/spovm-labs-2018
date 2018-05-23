@@ -1,0 +1,5 @@
+Quantity of subjects: 4
+MATHS has been canceled. 
+PHYSICS has been accepted. 
+PROGRAMMING has been accepted. 
+ENGLISH has been accepted. 
