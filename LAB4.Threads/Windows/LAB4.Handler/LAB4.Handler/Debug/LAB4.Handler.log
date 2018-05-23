@@ -1,12 +1,3 @@
-﻿  stdafx.cpp
-  LAB4.Handler.cpp
-c:\users\rosti\documents\github\systemprog-labs-2018\lab4.threads\windows\lab4.handler\lab4.handler\lab4.handler.cpp(1): warning C4603: '_CRT_SECURE_NO_WARNINGS': macro is not defined or definition is different after precompiled header use
-  c:\users\rosti\documents\github\systemprog-labs-2018\lab4.threads\windows\lab4.handler\lab4.handler\lab4.handler.cpp(1): note: Add macro to precompiled header instead of defining here
-  c:\users\rosti\documents\github\systemprog-labs-2018\lab4.threads\windows\lab4.handler\lab4.handler\lab4.handler.cpp(3): note: use of precompiled header
-c:\users\rosti\documents\github\systemprog-labs-2018\lab4.threads\windows\lab4.handler\lab4.handler\lab4.handler.cpp(52): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
-c:\users\rosti\documents\github\systemprog-labs-2018\lab4.threads\windows\lab4.handler\lab4.handler\lab4.handler.cpp(121): warning C4018: '<': signed/unsigned mismatch
-c:\users\rosti\documents\github\systemprog-labs-2018\lab4.threads\windows\lab4.handler\lab4.handler\lab4.handler.cpp(134): warning C4018: '<': signed/unsigned mismatch
-  ProcessInfo.cpp
-  Standart.cpp
-  Generating Code...
-  LAB4.Handler.vcxproj -> C:\Users\rosti\Documents\GitHub\systemprog-labs-2018\LAB4.Threads\Windows\LAB4.Handler\Debug\LAB4.Handler.exe
+﻿  LAB4.Handler.cpp
+c:\users\rostik\documents\github\systemprog-labs-2018\lab4.threads\windows\lab4.handler\lab4.handler\lab4.handler.cpp(66): warning C4129: 'L': unrecognized character escape sequence
+  LAB4.Handler.vcxproj -> C:\Users\Rostik\Documents\GitHub\systemprog-labs-2018\LAB4.Threads\Windows\LAB4.Handler\Debug\LAB4.Handler.exe
