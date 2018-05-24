@@ -1,44 +1,130 @@
 
+#include <cstdlib>
 #include <iostream>
 #include <vector>
 #include <string>
 
+#include <unistd.h>
 #include <ctime>
-#include "ncurses.h"
-#include <phread.h>
+#include <ncurses.h>
+#include <pthread.h>
 
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <sys/sem.h>
+#include <sys/shm.h>
+#include <semaphore.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <csignal>
+#include <sys/sem.h>
+
+
+#define BUFF_SIZE 64
 #define RANDOM_STRING_LENGTH 10
 
 #define SUBJECT_QUANTITY 3
 #define SUBJECTS "MATHS PHYSICS CHEMISTRY"
 
-phread_mutex_t print_mutex;
+using namespace std;
 
-struct MutexAndName {
-    phread_mutex_t* end_mutex;
-    std::string event_name;
+pthread_mutex_t print_mutex;// = PTHREAD_MUTEX_INITIALIZER;
+
+pthread_mutex_t wait_execute_mutex;
+
+int wait_semaphore(int sem_id, int num) {
+	struct sembuf buf;
+	buf.sem_op = -1;
+	buf.sem_flg = IPC_NOWAIT;
+	buf.sem_num = num;
+	return semop(sem_id, &buf, 1);
 }
 
-void client_thread(MutexAndName* mutex_and_name) {
-    std::string output_string = mutex_and_name->event_name;
-	//std::string output_string =  event_name + + ": accepted subjects are " + execute_client();
+int release_semaphore(int sem_id, int num) {
+	struct sembuf buf;
+	buf.sem_op = 1;
+	buf.sem_flg = IPC_NOWAIT;
+	buf.sem_num = num;
+	return semop(sem_id, &buf, 1);
+}
 
+struct MutexAndName {
+    pthread_mutex_t* end_mutex;
+    std::string event_name;
+};
+
+char* get_random_string(const int length) {
+	static const char characters[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+	char* str = new char[length + 1];
+
+	for (int i = 0; i < length; i++) {
+		str[i] = characters[rand() % (sizeof(characters) - 1)];
+	}
+	str[length] = '\0';
+	return str;
+}
+
+char* execute_client(string event_name) {	
+	int shm_id = shmget(1018, BUFF_SIZE, IPC_CREAT | 0777);
+	int sem_id = semget(2018, 1, IPC_CREAT | 0777);
+
+	if (shm_id == -1 || sem_id == -1) {
+		printw("Error! Cannot create sem_id or shm_id! (parent)");
+		refresh();
+	}
+
+	void* buffer = shmat(shm_id, NULL, 0);
+	char* identificator = get_random_string(10);
+	pid_t pid;
+	switch (pid = fork()) {		
+	case -1:
+		printw("Error! Cannot create new process! (parent)");
+		refresh();
+		break;
+
+	case 0:
+		if (execl("./child", "1", "PHYSICS", "MATHS", "ENGLISH", NULL) == -1) {
+			printw("Error! Cannot open file! (parent)");
+			exit(0);
+			refresh();
+		}
+
+	default:
+		break;
+	}
+
+	wait_semaphore(sem_id, 0);
+
+	return (char*) buffer;
+}
+
+void* client_thread(void* args) {
+	srand((unsigned)time(NULL));
+	MutexAndName* mutex_and_name = (MutexAndName*)args; 
+    //std::string output_string = mutex_and_name->event_name;
+	pthread_mutex_lock(&wait_execute_mutex);
+	std::string output_string =  mutex_and_name->event_name + ": accepted subjects are " + execute_client(mutex_and_name->event_name);
+	pthread_mutex_unlock(&wait_execute_mutex);
+
+	const char* output_char = output_string.c_str();
 	do {
-		phread_mutex_lock(&print_mutex);
+		pthread_mutex_lock(&print_mutex);
         clear();
         curs_set(0);
         move(0,0);
-		for (unsigned i = 0; output_string[i] != '\0', i < output_string.length(); i++) {
-            printw(output_string[i]);
-			Sleep(100);
+		refresh();
+		for (unsigned i = 0; output_char[i] != '\0', i < output_string.length(); i++) {
+            printw("%c", output_char[i]);
+			refresh();
+			usleep(50000);
 		}
-		phread_mutex_unlock(&print_mutex);
-		napms(400);
-        if (phread_mutex_trylock(mutex_and_name->end_mutex)) {
-			phread_mutex_unlock(mutex_and_name->end_mutex);
+		pthread_mutex_unlock(&print_mutex);
+        usleep(100000);
+		if (pthread_mutex_trylock(mutex_and_name->end_mutex) == PTHREAD_MUTEX_NORMAL) {
+			pthread_mutex_unlock(mutex_and_name->end_mutex);
 		}
 		else {
-			break;
+				break;
 		}
 	} while (true);
 }
@@ -46,10 +132,10 @@ void client_thread(MutexAndName* mutex_and_name) {
 
 
 struct ThreadMutex {
-    phread_t* thread_id;
-    phread_attr_t* attr;
-    phread_mutex_t* end_mutex;
-}
+    pthread_t* thread_id;
+    pthread_attr_t* attr;
+    pthread_mutex_t* end_mutex;
+};
 
 std::vector<ThreadMutex*> thread_stack;
 
@@ -59,6 +145,9 @@ int main() {
 	clear();
 	noecho();
 	refresh();
+	
+	print_mutex = PTHREAD_MUTEX_INITIALIZER;
+	wait_execute_mutex = PTHREAD_MUTEX_INITIALIZER;
 
     while (true) {
 		char in_character = getchar();
@@ -66,17 +155,18 @@ int main() {
 		//create new thread
 		case '=':
 		case '+': {
-            std::string thread_number = std::to_string(thread_stack.size());
+			char str[16];
+			snprintf(str, sizeof(str), "%ld%ld%ld%ld", thread_stack.size(), thread_stack.size(), thread_stack.size(), thread_stack.size());
+            std::string thread_number = string(str);
 
-            phread_t* thread_id = new phread_t;
-            phread_attr_t* thread_id = new phread_attr_t;
-			phread_mutex_t* end_mutex = new phread_mutex_t;
+            pthread_t* thread_id = new pthread_t;
+            pthread_attr_t* attr = new pthread_attr_t;
+			pthread_mutex_t* end_mutex = new pthread_mutex_t; 
             MutexAndName* mutex_and_name = new MutexAndName;
-            mutex_and_name.end_mutex = end_mutex;
-            mutex_and_name.event_name = "Process " + thread_number + thread_number + thread_number + thread_number;
+            mutex_and_name->end_mutex = end_mutex;
+            mutex_and_name->event_name = "Process " + thread_number;
 					
-            pthread_create(phread_t, phread_attr_t, client_thread, mutex_and_name);
-			
+            pthread_create(thread_id, NULL, client_thread, (void*) mutex_and_name);		
             ThreadMutex* thread_mutex = new ThreadMutex;
 			thread_mutex->thread_id = thread_id;
 			thread_mutex->attr = attr;
@@ -92,7 +182,7 @@ int main() {
 			}
 			ThreadMutex* thread_mutex = thread_stack.back();
 			thread_stack.pop_back();
-            phread_mutex_lock(thread_mutex->end_mutex);
+            pthread_mutex_trylock(thread_mutex->end_mutex);
 			break;
 		}
 		//quit program
@@ -100,9 +190,11 @@ int main() {
 			exit(0);
 			break;
 		}
-		}
+			default: {
 
-		Sleep(400);
+			}
+		}
+		usleep(1000000);
 	}
 
     echo();
