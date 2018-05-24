@@ -116,10 +116,10 @@ void* client_thread(void* args) {
 		for (unsigned i = 0; output_char[i] != '\0', i < output_string.length(); i++) {
             printw("%c", output_char[i]);
 			refresh();
-			usleep(50000);
+			//usleep(50000);
 		}
 		pthread_mutex_unlock(&print_mutex);
-        usleep(100000);
+        //usleep(100000);
 		if (pthread_mutex_trylock(mutex_and_name->end_mutex) == PTHREAD_MUTEX_NORMAL) {
 			pthread_mutex_unlock(mutex_and_name->end_mutex);
 		}
