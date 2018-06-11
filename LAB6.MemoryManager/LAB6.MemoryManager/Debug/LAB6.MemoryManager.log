@@ -1,0 +1,6 @@
+﻿  Memory.cpp
+c:\users\rosti\documents\github\systemprog-labs-2018\lab6.memorymanager\lab6.memorymanager\memory.cpp(53): warning C4018: '<': signed/unsigned mismatch
+c:\users\rosti\documents\github\systemprog-labs-2018\lab6.memorymanager\lab6.memorymanager\memory.cpp(57): warning C4018: '<': signed/unsigned mismatch
+c:\users\rosti\documents\github\systemprog-labs-2018\lab6.memorymanager\lab6.memorymanager\memory.cpp(83): warning C4018: '<': signed/unsigned mismatch
+c:\users\rosti\documents\github\systemprog-labs-2018\lab6.memorymanager\lab6.memorymanager\memory.cpp(205): warning C4018: '<': signed/unsigned mismatch
+  LAB6.MemoryManager.vcxproj -> C:\Users\rosti\Documents\GitHub\systemprog-labs-2018\LAB6.MemoryManager\Debug\LAB6.MemoryManager.exe
