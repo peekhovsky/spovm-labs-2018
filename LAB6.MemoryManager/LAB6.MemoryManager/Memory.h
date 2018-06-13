@@ -21,18 +21,18 @@ struct Page {
 };
 
 class Memory {
-public:
-	static const int BUFFER_SIZE = 20;
-	static const int BUFFER_AMOUNT = 2;
+
+	static const int BUFFER_SIZE = 40;
+	static const int BUFFER_AMOUNT = 4;
 	static const int PAGE_SIZE = 10;
 	static const int PAGE_AMOUNT = (BUFFER_SIZE / PAGE_SIZE) * BUFFER_AMOUNT;
 	static const int PAGE_AMOUNT_IN_BUFFER = (BUFFER_SIZE / PAGE_SIZE);
 
-	int current_buffer;
-
+	int current_buffer_number;
 	char* buffer;
 	vector<Page> pages;
-	
+
+public:
 	//Constructor
 	Memory();
 	~Memory();
@@ -43,13 +43,15 @@ public:
 	Object* malloc(int size);
 	void free(Object* object);
 
-	void write_page_to_disk(int);
-
 	void change_buffer();
 	void change_buffer(int);
-
 	
 	void set_value(Object* object, string value);
 	char* get_value(Object* object);
+
+	char* get_buffer();
+
+	static int get_page_size();
+	static int get_page_amount();
 };
 

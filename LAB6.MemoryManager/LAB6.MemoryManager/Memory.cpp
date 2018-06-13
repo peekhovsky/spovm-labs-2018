@@ -5,7 +5,7 @@
 Memory::Memory() {
 	//allocate memory for buffer
 	buffer = new char[BUFFER_SIZE + 1];
-	memset(buffer, 'a', BUFFER_SIZE);
+	memset(buffer, '_', BUFFER_SIZE);
 	buffer[BUFFER_SIZE] = '\0';
 	
 	for (int i = 0; i < BUFFER_AMOUNT; i++) {
@@ -27,7 +27,7 @@ Memory::Memory() {
 
 	}
 
-	current_buffer = 0;
+	current_buffer_number = 0;
 
 	//allocate memory for page table
 	for (int i = 0; i < PAGE_AMOUNT; i++) {
@@ -77,7 +77,9 @@ Object* Memory::malloc(int alloc_size) {
 	int p = 0;
 
 	while (true) {
-		for (int i = PAGE_AMOUNT_IN_BUFFER * current_buffer; i < PAGE_AMOUNT_IN_BUFFER * current_buffer + PAGE_AMOUNT_IN_BUFFER; i++) {
+		for (int i = PAGE_AMOUNT_IN_BUFFER * current_buffer_number;
+			i < PAGE_AMOUNT_IN_BUFFER * current_buffer_number + PAGE_AMOUNT_IN_BUFFER; i++) {
+
 			bool is_bizy[PAGE_SIZE] = { false };
 
 			for (int j = 0; j < pages[i].objects.size(); j++) {
@@ -91,13 +93,18 @@ Object* Memory::malloc(int alloc_size) {
 			}
 
 			int peace_size = 0;
-			for (int j = 0; j < PAGE_SIZE; j++) {
+			for (int j = 0; j <= PAGE_SIZE; j++) {
+
 				if (is_bizy[j] != true) {
+
 					if (peace_size >= alloc_size) {
-						object->pointer = buffer + PAGE_SIZE * (i - (PAGE_AMOUNT_IN_BUFFER * current_buffer)) + (j - peace_size);
+
+						object->pointer = buffer + PAGE_SIZE * (i - (PAGE_AMOUNT_IN_BUFFER * current_buffer_number)) 
+							+ (j - peace_size);
 						object->page_index = i;
 						object->page_offset = j - peace_size;
 						object->size = alloc_size;
+
 						pages[i].objects.push_back(object);
 						return object;
 					}
@@ -115,9 +122,9 @@ Object* Memory::malloc(int alloc_size) {
 		}
 		else {
 			p++;
-			cout << "Change buffer: from " << current_buffer << " to ";
+			cout << "Change buffer: from " << current_buffer_number << " to ";
 			change_buffer();
-			cout << current_buffer << endl;
+			cout << current_buffer_number << endl;
 		}
 	}
 	return nullptr;
@@ -136,7 +143,7 @@ void Memory::free(Object* object) {
 void Memory::change_buffer() {
 
 	//old buffer
-	string file_name = to_string(current_buffer) + ".txt";
+	string file_name = to_string(current_buffer_number) + ".txt";
 	ofstream old_buffer_file;
 	old_buffer_file.open(file_name);
 
@@ -147,15 +154,15 @@ void Memory::change_buffer() {
 	old_buffer_file.close();
 
 	//change number of buffer
-	if (current_buffer == (BUFFER_AMOUNT - 1)) {
-		current_buffer = 0;
+	if (current_buffer_number == (BUFFER_AMOUNT - 1)) {
+		current_buffer_number = 0;
 	}
 	else {
-		current_buffer++;
+		current_buffer_number++;
 	}
 
 	//new buffer
-	file_name = to_string(current_buffer) + ".txt";
+	file_name = to_string(current_buffer_number) + ".txt";
 	ifstream new_buffer_file(file_name);
 
 	if (new_buffer_file.is_open()) {
@@ -173,7 +180,7 @@ void Memory::change_buffer(int new_buffer_index) {
 	}
 
 	//old buffer
-	string file_name = to_string(current_buffer) + ".txt";
+	string file_name = to_string(current_buffer_number) + ".txt";
 	ofstream old_buffer_file;
 	old_buffer_file.open(file_name);
 
@@ -182,10 +189,10 @@ void Memory::change_buffer(int new_buffer_index) {
 	}
 	old_buffer_file.close();
 
-	current_buffer = new_buffer_index;
+	current_buffer_number = new_buffer_index;
 
 	//new buffer
-	file_name = to_string(current_buffer) + ".txt";
+	file_name = to_string(current_buffer_number) + ".txt";
 	ifstream new_buffer_file(file_name);
 
 	if (new_buffer_file.is_open()) {
@@ -195,8 +202,8 @@ void Memory::change_buffer(int new_buffer_index) {
 }
 
 void Memory::set_value(Object * object, string value) {
-	if (current_buffer != (object->page_index / PAGE_AMOUNT_IN_BUFFER)) {
-		cout << "Change buffer: from " << current_buffer << " to " << object->page_index / PAGE_AMOUNT_IN_BUFFER << endl;
+	if (current_buffer_number != (object->page_index / PAGE_AMOUNT_IN_BUFFER)) {
+		cout << "Change buffer: from " << current_buffer_number << " to " << object->page_index / PAGE_AMOUNT_IN_BUFFER << endl;
 		change_buffer(object->page_index / PAGE_AMOUNT_IN_BUFFER);
 	}
 
@@ -211,8 +218,8 @@ void Memory::set_value(Object * object, string value) {
 
 char* Memory::get_value(Object* object) {
 
-	if (current_buffer != (object->page_index / PAGE_AMOUNT_IN_BUFFER)) {
-		cout << "Change buffer: from " << current_buffer << " to " << object->page_index / PAGE_AMOUNT_IN_BUFFER << endl;
+	if (current_buffer_number != (object->page_index / PAGE_AMOUNT_IN_BUFFER)) {
+		cout << "Change buffer: from " << current_buffer_number << " to " << object->page_index / PAGE_AMOUNT_IN_BUFFER << endl;
 		change_buffer(object->page_index / PAGE_AMOUNT_IN_BUFFER);
 		
 	}
@@ -221,5 +228,17 @@ char* Memory::get_value(Object* object) {
 	memset(return_value, '\0', object->size + 1);
 	strncpy(return_value, object->pointer, object->size);
 	return return_value;
+}
+
+char* Memory::get_buffer() {
+	return buffer;
+}
+
+int Memory::get_page_size() {
+	return PAGE_SIZE;
+}
+
+int Memory::get_page_amount() {
+	return PAGE_AMOUNT;
 }
 
